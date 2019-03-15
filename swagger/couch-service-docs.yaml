@@ -1,0 +1,120 @@
+swagger: "2.0"
+
+info:
+  title: "My API documentation"
+  version: "1.0"
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+
+basePath: /v1.0
+
+schemes:
+ - http
+securityDefinitions:
+  basicAuth:
+    type: basic
+    x-basicInfoFunc: app.basic_auth
+paths:
+  /products/:
+    post:
+      tags:
+      - admins
+      security:
+        - basicAuth: []
+      operationId: api.products.create_product
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      parameters:
+      - in: body
+        name: productPayload
+        description: Inventory product to add
+        schema:
+          $ref: '#/definitions/Product'
+      responses:
+        201:
+          description: Successfully added product to the DB
+        400:
+          description: invalid input, object invalid
+        409:
+          description: an existing item already exists
+    put:
+      tags:
+      - admins
+      operationId: api.products.update_product
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      parameters:
+      - in: body
+        name: productPayload
+        description: Inventory item to add
+        schema:
+          $ref: '#/definitions/Product'
+          
+      responses:
+        201:
+          description: Successfully added product to the DB
+        400:
+          description: invalid input, object invalid
+        409:
+          description: an existing item already exists
+  /products/{prod_id}:
+      get:
+        tags:
+        - public
+        operationId: api.products.read_product
+        parameters:
+          - in: path
+            name: prod_id
+            type: string
+            required: true
+            description: Numeric ID of the user to get.
+        responses:
+          '200':
+            description: 'Fetch a product from the database'
+            schema:
+                $ref: '#/definitions/Product'
+      delete:
+        tags:
+        - admins
+        security:
+        - basicAuth: []
+        parameters:
+          - in: path
+            name: prod_id
+            type: string
+            required: true
+            description: Numeric ID of the user to get.    
+        operationId: api.products.delete_product
+        responses:
+          200:
+            description: Successfully deleted product 
+          400:
+            description: invalid input, object invalid
+          409:
+            description: conflict error
+          401:
+            description: Not correctly authorized 
+      
+
+
+# tags are used for organizing operations
+tags:
+- name: public
+  description: Operations available to regular developers
+- name: admins
+  description: Secured Admin-only calls
+
+definitions:
+  Product:
+    type: object
+    properties:
+      _id:  { type: string }
+      prodname: { type: string }
+      category: { type: string }
+      quantity: 
+        type: number

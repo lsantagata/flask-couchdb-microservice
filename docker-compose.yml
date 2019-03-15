@@ -1,0 +1,17 @@
+version: "2"
+
+services:
+  flask-api:
+    restart: always
+    image: flask-api-microservice
+    build: .
+    environment:
+      - MODE=dev
+      - SERVER_URL='http://admin:pass@db.scanitive.ryan-gordon.me:5984'
+    volumes:
+      - .:/code
+   
+    ports:
+      - "2020:2020"
+      
+  
